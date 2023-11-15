@@ -1,0 +1,26 @@
+{
+	"name": "uutty-back",
+	"version": "0.0.1",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "nodemon --exec ts-node src/index.ts",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"format": "prettier --write ."
+	},
+	"keywords": [
+		"tty"
+	],
+	"author": "lumiknit (aasr4r4@gmail.com)",
+	"license": "MIT",
+	"dependencies": {
+		"@types/koa": "^2.13.11",
+		"@types/node": "^20.9.0",
+		"eslint": "^8.53.0",
+		"koa": "^2.14.2",
+		"nodemon": "^3.0.1",
+		"prettier": "^3.1.0",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.2.2"
+	}
+}

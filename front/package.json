@@ -1,0 +1,27 @@
+{
+	"name": "uutty-front",
+	"private": true,
+	"version": "0.0.1",
+	"keywords": [
+		"tty"
+	],
+	"author": "lumiknit (aasr4r4@gmail.com)",
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"format": "prettier --write ."
+	},
+	"dependencies": {
+		"solid-js": "^1.7.8"
+	},
+	"devDependencies": {
+		"eslint": "^8.53.0",
+		"prettier": "^3.1.0",
+		"typescript": "^5.0.2",
+		"vite": "^4.4.5",
+		"vite-plugin-solid": "^2.7.0"
+	}
+}
