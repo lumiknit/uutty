@@ -1,8 +1,7 @@
 import { Component } from "solid-js";
-import { keyToEscape } from "../input/key";
-import { inputDataToEscape } from "../input/input";
 import { TermState } from "./term-state";
 import TermBuffer from "./TermBuffer";
+import { inputToSeq, specialKeyToSeq } from "../xterm/input";
 
 type TermProps = {
 	state: TermState;
@@ -21,7 +20,7 @@ const Term: Component<TermProps> = props => {
 	};
 
 	const handleInputData = (data: string) => {
-		props.onInput?.(inputDataToEscape(data));
+		props.onInput?.(inputToSeq(data));
 		taRef!.value = "";
 	};
 
@@ -36,15 +35,17 @@ const Term: Component<TermProps> = props => {
 					console.log("OnKeyDown", e);
 					if (props.onKeydown) props.onKeydown(e);
 					if (!e.isComposing && e.keyCode !== 229) {
-						props.onInput?.(
-							keyToEscape(
-								e.key,
-								e.shiftKey,
-								e.ctrlKey,
-								e.altKey,
-								e.metaKey,
-							),
+						const seq = specialKeyToSeq(
+							e.code,
+							e.ctrlKey,
+							e.shiftKey,
+							e.altKey || e.metaKey,
 						);
+						if (seq) {
+							e.preventDefault();
+							e.stopPropagation();
+							props.onInput?.(seq);
+						}
 					}
 				}}
 				onInput={e => {

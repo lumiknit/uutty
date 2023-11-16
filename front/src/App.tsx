@@ -43,7 +43,7 @@ export default () => {
 				<Term
 					state={state()!.state}
 					onInput={data => {
-						console.log("OnInput", data);
+						console.log("Inputted:", data);
 						state()?.ws.send("w" + data);
 					}}
 				/>
