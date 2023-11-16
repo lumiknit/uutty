@@ -3,11 +3,12 @@ import serve from "koa-static";
 import mount from "koa-mount";
 import websockify from "koa-websocket";
 
-import "./tty";
+import "./ws-pty";
+import { spawnPtyOnSocket } from "./ws-pty";
 
 const app = websockify(new Koa());
 
-/* Static serving */
+/* Issue ID */
 
 app.use(
 	mount("/echo", async ctx => {
@@ -17,12 +18,11 @@ app.use(
 
 app.ws.use(
 	mount("/ws", async ctx => {
-		ctx.websocket.on("message", message => {
-			console.log("Recieved:", message.toString());
-		});
-		ctx.websocket.send("Hello World");
+		spawnPtyOnSocket(ctx.websocket);
 	}),
 );
+
+/* Static serving */
 
 app.use(serve("../front-dist"));
 

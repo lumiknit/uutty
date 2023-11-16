@@ -1,0 +1,2 @@
+STTY='raw -echo min 0 time 40' cat -vte
+to see keycode
