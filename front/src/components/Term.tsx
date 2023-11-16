@@ -1,47 +1,42 @@
-import { Component, createEffect } from "solid-js";
-import { getWebSocketURL, openWebSocket } from "../pty";
+import { Component } from "solid-js";
 import { keyToEscape } from "../input/key";
 import { inputDataToEscape } from "../input/input";
+import { TermState } from "./term-state";
+import TermBuffer from "./TermBuffer";
 
-type TermProps = {};
+type TermProps = {
+	state: TermState;
+	class?: string;
+	onKeydown?: (e: KeyboardEvent) => void;
+	onInput?: (data: string) => void;
+};
 
 const Term: Component<TermProps> = props => {
 	let taRef: HTMLTextAreaElement | undefined;
 	let ref: HTMLDivElement | undefined;
-	let ws: WebSocket | undefined;
 
-	const sendKey = (escaped: string) => {
-		if (!ws) return;
-		ws.send("w" + escaped);
+	const focus = () => {
+		if (!taRef) return;
+		taRef.focus();
 	};
 
-	// Create terminal
-	createEffect(() => {
-		if (!ref) return;
-		console.log("Mounted");
-		ws = openWebSocket(getWebSocketURL(), {
-			onMessage: e => {
-				ref!.innerText += e.data;
-			},
-		});
-	});
+	const handleInputData = (data: string) => {
+		props.onInput?.(inputDataToEscape(data));
+		taRef!.value = "";
+	};
+
 	return (
 		<>
-			<div
-				ref={ref}
-				class="uutty-term"
-				tabIndex={0}
-				onClick={() => {
-					if (!taRef) return;
-					taRef.focus();
-				}}
-			/>
+			<div ref={ref} class="uutty-term" onClick={focus}>
+				<TermBuffer buffer={props.state.buffer[0]()} />
+			</div>
 			<textarea
 				ref={taRef}
 				onKeyDown={e => {
 					console.log("OnKeyDown", e);
+					if (props.onKeydown) props.onKeydown(e);
 					if (!e.isComposing && e.keyCode !== 229) {
-						sendKey(
+						props.onInput?.(
 							keyToEscape(
 								e.key,
 								e.shiftKey,
@@ -54,12 +49,13 @@ const Term: Component<TermProps> = props => {
 				}}
 				onInput={e => {
 					console.log("OnInput", e);
-					if (!e.isComposing && e.data)
-						sendKey(inputDataToEscape(e.data));
+					if (!e.isComposing && e.data) {
+						handleInputData(e.data);
+					}
 				}}
 				onCompositionEnd={e => {
 					console.log("OnCompositionEnd", e);
-					sendKey(inputDataToEscape(e.data));
+					handleInputData(e.data);
 				}}
 			/>
 		</>

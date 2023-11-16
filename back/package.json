@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts",
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint --ext .ts src",
@@ -21,7 +22,8 @@
     "koa-static": "^5.0.0",
     "koa-websocket": "^7.0.0",
     "node-pty": "^1.0.0",
-    "ws": "^8.14.2"
+    "ws": "^8.14.2",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/koa": "^2.13.11",
@@ -30,6 +32,7 @@
     "@types/koa-websocket": "^5.0.10",
     "@types/node": "^20.9.0",
     "@types/ws": "^8.5.9",
+    "@types/yargs": "^17.0.31",
     "eslint": "^8.53.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.1.0",
