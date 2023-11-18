@@ -5,9 +5,15 @@ settings:
     excludeLinksFromLockfile: false
 
 dependencies:
+    "@types/wcwidth":
+        specifier: ^1.0.2
+        version: 1.0.2
     solid-js:
         specifier: ^1.7.8
         version: 1.8.5
+    wcwidth:
+        specifier: ^1.0.1
+        version: 1.0.1
 
 devDependencies:
     eslint:
@@ -926,6 +932,13 @@ packages:
             "@babel/types": 7.23.3
         dev: true
 
+    /@types/wcwidth@1.0.2:
+        resolution:
+            {
+                integrity: sha512-flVlIrTSL6Z0RS2/IQYP0sUDajwuZ21FQAdOjzitcraVAarBFBwBpixtvxMno56vzFvLAbaGZEhkmMVYmWVUQA==,
+            }
+        dev: false
+
     /@ungap/structured-clone@1.2.0:
         resolution:
             {
@@ -1097,6 +1110,14 @@ packages:
             supports-color: 7.2.0
         dev: true
 
+    /clone@1.0.4:
+        resolution:
+            {
+                integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==,
+            }
+        engines: { node: ">=0.8" }
+        dev: false
+
     /color-convert@1.9.3:
         resolution:
             {
@@ -1183,6 +1204,15 @@ packages:
                 integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==,
             }
         dev: true
+
+    /defaults@1.0.4:
+        resolution:
+            {
+                integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==,
+            }
+        dependencies:
+            clone: 1.0.4
+        dev: false
 
     /doctrine@3.0.0:
         resolution:
@@ -2201,6 +2231,15 @@ packages:
         dependencies:
             vite: 4.5.0
         dev: true
+
+    /wcwidth@1.0.1:
+        resolution:
+            {
+                integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==,
+            }
+        dependencies:
+            defaults: 1.0.4
+        dev: false
 
     /which@2.0.2:
         resolution:

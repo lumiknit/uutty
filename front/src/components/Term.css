@@ -1,0 +1,49 @@
+.uutty-term {
+	position: absoulte;
+}
+
+.uutty-term-container {
+	position: relative;
+}
+
+.uutty-term-buffer {
+	display: block;
+	position: relative;
+}
+
+.uutty-term-buffer span {
+	white-space: pre-wrap;
+}
+
+.uutty-dummy-canvas {
+	display: none;
+}
+
+/* Cursor */
+
+@keyframes blink-effect {
+	50% {
+		border-left-color: transparent;
+	}
+}
+
+.uutty-cursor {
+	animation: none;
+	background-color: transparent;
+	border: none;
+	border-left: 2px solid black;
+	border-radius: 0;
+	caret-color: transparent;
+	height: 1.2em;
+	overflow: visible;
+	padding: 0;
+	pointer-events: none;
+	position: absolute;
+	resize: none;
+	width: 2em;
+}
+
+.uutty-cursor:focus {
+	animation: blink-effect 0.75s ease-in-out infinite;
+	outline: none;
+}
