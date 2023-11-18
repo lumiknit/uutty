@@ -79,9 +79,6 @@ for (let i = 0; i < 26; i++) {
 	);
 }
 
-// Mapping keycode and ascii
-const asciiMap = new Map<string, string>();
-
 export const specialKeyToSeq = (
 	key: string,
 	ctrl: boolean,
@@ -90,7 +87,7 @@ export const specialKeyToSeq = (
 ): string => {
 	let seq = "";
 	const mmkey = `${ctrl ? "^" : ""}${shift ? "+" : ""}${key}`;
-	console.log("mm", mmkey, asciiCodeMap.get(mmkey));
+	// console.log("mm", mmkey, asciiCodeMap.get(mmkey));
 	if (asciiCodeMap.has(mmkey)) {
 		seq = asciiCodeMap.get(mmkey)!;
 	} else {

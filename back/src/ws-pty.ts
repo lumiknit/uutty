@@ -95,6 +95,7 @@ export const spawnPtyOnSocket = (socket: WebSocket) => {
 			case "r": {
 				// Resize
 				const [cols, rows] = data.split(",").map(Number);
+				if (!(cols > 0 && rows > 0)) break;
 				pty!.resize(cols, rows);
 				break;
 			}

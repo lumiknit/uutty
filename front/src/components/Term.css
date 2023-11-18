@@ -1,0 +1,43 @@
+.uutty-term {
+	position: absoulte;
+}
+
+.uutty-term-container {
+	position: relative;
+}
+
+.uutty-term-buffer {
+	display: block;
+	position: relative;
+}
+
+.uutty-dummy-canvas {
+	display: none;
+}
+
+/* Cursor */
+
+@keyframes blink-effect {
+	50% {
+		border-left-color: transparent;
+	}
+}
+
+.uutty-cursor {
+	position: absolute;
+	resize: none;
+	background-color: transparent;
+	border: none;
+	overflow: visible;
+	width: 2em;
+	height: 1.2em;
+	pointer-events: none;
+	caret-color: transparent;
+	border-left: 2px solid black;
+	animation: blink-effect 1s ease-in-out infinite;
+	padding: 0;
+}
+
+.uutty-cursor:focus {
+	outline: none;
+}

@@ -2,6 +2,7 @@ import { getAPIURL } from "./url";
 
 export type ThemeConfig = {
 	fontFamily: string;
+	fontSize: number;
 	fg: string;
 	bg: string;
 	cursor: string;

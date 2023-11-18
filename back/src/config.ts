@@ -2,7 +2,6 @@ import * as os from "node:os";
 import * as fs from "node:fs";
 
 import yargs from "yargs";
-import helpers from "yargs/helpers";
 
 export type NoAuthConfig = {
 	type: "none";
@@ -18,6 +17,7 @@ export type AuthConfig = NoAuthConfig | BasicAuthConfig;
 
 export type ThemeConfig = {
 	fontFamily: string;
+	fontSize: number;
 	fg: string;
 	bg: string;
 	cursor: string;
@@ -64,7 +64,8 @@ export const defaultConfig = (): Config => ({
 	env: process.env,
 	themes: [
 		{
-			fontFamily: "monospace",
+			fontFamily: "'Iosevka QP Lumi', sans-serif",
+			fontSize: 14,
 			fg: "#ffffff",
 			bg: "#000000",
 			cursor: "#ffffff",
@@ -163,7 +164,6 @@ export const parseArgs = (): Config => {
 	const config = defaultConfig();
 	// Load from args
 	const parsed = yargs.parseSync();
-	console.log(parsed);
 	// Copy over
 	Object.assign(config, parsed);
 	// Load from file

@@ -7,6 +7,7 @@ export default defineConfig({
 	build: {
 		outDir: "../front-dist",
 		emptyOutDir: true,
+		assetsInlineLimit: 1024 * 1024,
 	},
 	server: {
 		proxy: {
