@@ -9,87 +9,54 @@ const ESC = "\x1b";
 
 // Mapping from keycode to ascii
 // Ctrl & shift will be added as prefix "^" and "+"
-const asciiCodeMap = new Map<string, string>([
+const controlMap = new Map<string, string>([
 	["^+Digit2", "\x00"],
 	["^BracketLeft", "\x1b"],
 	["^Backslash", "\x1c"],
 	["^BracketRight", "\x1d"],
 	["^Caret", "\x1e"],
 	["^Underscore", "\x1f"],
-	["+Digit1", "!"],
-	["+Digit2", "@"],
-	["+Digit3", "#"],
-	["+Digit4", "$"],
-	["+Digit5", "%"],
-	["+Digit6", "^"],
-	["+Digit7", "&"],
-	["+Digit8", "*"],
-	["+Digit9", "("],
-	["+Digit0", ")"],
-	["+Minus", "_"],
-	["+Equal", "+"],
-	["+Backspace", "\x7f"],
-	["+BracketLeft", "{"],
-	["+BracketRight", "}"],
-	["+Backslash", "|"],
-	["+Semicolon", ":"],
-	["+Quote", '"'],
-	["+Comma", "<"],
-	["+Period", ">"],
-	["+Slash", "?"],
-	["+Enter", "\r"],
-	["+Space", " "],
-	["+Backquote", "~"],
-	["+Minus", "_"],
-	["+Equal", "+"],
-	["+BracketLeft", "{"],
-	["+BracketRight", "}"],
-	["+Backslash", "|"],
-	["+Semicolon", ":"],
-	["Space", " "],
-	["Minus", "-"],
-	["Equal", "="],
-	["Backspace", "\x7f"],
-	["BracketLeft", "["],
-	["BracketRight", "]"],
-	["Backslash", "\\"],
-	["Semicolon", ";"],
-	["Quote", "'"],
-	["Comma", ","],
-	["Period", "."],
-	["Slash", "/"],
-	["Backquote", "`"],
 ]);
 
-for (let i = 0; i < 10; i++) {
-	asciiCodeMap.set(`Digit${i}`, i.toString());
-}
 for (let i = 0; i < 26; i++) {
-	asciiCodeMap.set(
-		`Key${String.fromCharCode(65 + i)}`,
-		String.fromCharCode(97 + i),
+	controlMap.set(
+		`^${String.fromCharCode(65 + i)}`,
+		String.fromCharCode(1 + i),
 	);
-	asciiCodeMap.set(
-		`+Key${String.fromCharCode(65 + i)}`,
-		String.fromCharCode(65 + i),
-	);
-	asciiCodeMap.set(
-		`^Key${String.fromCharCode(65 + i)}`,
+	controlMap.set(
+		`^${String.fromCharCode(97 + i)}`,
 		String.fromCharCode(1 + i),
 	);
 }
 
 export const specialKeyToSeq = (
 	key: string,
+	code: string,
 	ctrl: boolean,
 	shift: boolean,
 	alt: boolean,
 ): string => {
+	// Overwrite digit / key to prevent option key in mac
+	if (code.startsWith("Digit")) {
+		key = code.slice(5);
+	}
+	if (code.startsWith("Key")) {
+		const t = (key = code.slice(3));
+		if (t.toLowerCase() !== key.toLowerCase()) {
+			key = shift ? t : t.toLowerCase();
+		}
+	}
+	const charCode = key.charCodeAt(0);
 	let seq = "";
 	const mmkey = `${ctrl ? "^" : ""}${shift ? "+" : ""}${key}`;
 	// console.log("mm", mmkey, asciiCodeMap.get(mmkey));
-	if (asciiCodeMap.has(mmkey)) {
-		seq = asciiCodeMap.get(mmkey)!;
+	if (controlMap.has(mmkey)) {
+		seq = controlMap.get(mmkey)!;
+	} else if (key.length === 1 && 32 <= charCode && charCode < 127) {
+		console.log(key, code);
+		if (alt) {
+			seq = key;
+		}
 	} else {
 		switch (key) {
 			case "Enter":

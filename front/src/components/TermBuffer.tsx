@@ -49,6 +49,7 @@ type LineChunk = {
 
 export type RenderedLine = {
 	m: number; // Modificaion counter
+	cursor?: number; // Cursor position
 	chunks: LineChunk[];
 };
 
@@ -67,8 +68,11 @@ const renderLineToChunks = (
 	let lastAttr = "_";
 	let chunk: LineChunk = newEmptyChunk("");
 	// Helpers
+	const pushChunk = () => {
+		if (chunk.text) chunks.push(chunk);
+	};
 	const pushCursor = () => {
-		chunks.push(chunk);
+		pushChunk();
 		chunks.push(newEmptyChunk("cursor"));
 		chunk = newEmptyChunk("");
 	};
@@ -77,7 +81,7 @@ const renderLineToChunks = (
 	for (; i < cells.length; i++) {
 		if (i === cursor) pushCursor();
 		if (cells[i].attr !== lastAttr) {
-			chunks.push(chunk);
+			pushChunk();
 			chunk = newEmptyChunk("");
 			// Parse attr
 			lastAttr = cells[i].attr;
@@ -111,9 +115,10 @@ const renderLineToChunks = (
 		chunk.text += cells[i].char;
 	}
 	if (i === cursor) pushCursor();
-	chunks.push(chunk);
+	pushChunk();
 	return {
 		m: line.m,
+		cursor,
 		chunks,
 	};
 };
@@ -121,13 +126,19 @@ const renderLineToChunks = (
 const TermBufferLine: Component<TermBufferLineProps> = props => {
 	const [rendered, setRendered] = createSignal<RenderedLine>({
 		m: 0,
-		chunks: [],
+		chunks: [
+			{
+				class: "",
+				style: {},
+				text: " ",
+			},
+		],
 	});
 	const theme = () => props.state.config.themes[props.state.theme[0]()];
 	createEffect(() => {
 		props.state.buffer[0](); // Just subscribe to the buffer
 		setRendered(r =>
-			r.m === props.line.m
+			r.m === props.line.m && r.cursor === props.cursor
 				? r
 				: renderLineToChunks(theme(), props.line, props.cursor),
 		);

@@ -42,19 +42,19 @@ export const encodeColor = (color?: Color): string => {
 };
 
 export const decodeColor = (color: string): Color | undefined => {
-	try {
-		if (color.charAt(0) === "#") {
-			const rgb = parseInt(color.slice(1), 16);
-			return {
-				type: ColorType.c24b,
-				r: (rgb >> 16) & 0xff,
-				g: (rgb >> 8) & 0xff,
-				b: rgb & 0xff,
-			};
-		}
-		const n = parseInt(color.slice(1), 16);
-		return { type: ColorType.c256, color: n % 256 };
-	} catch (e) {}
+	if (color.charAt(0) === "#") {
+		const rgb = parseInt(color.slice(1), 16);
+		if (isNaN(rgb)) return;
+		return {
+			type: ColorType.c24b,
+			r: (rgb >> 16) & 0xff,
+			g: (rgb >> 8) & 0xff,
+			b: rgb & 0xff,
+		};
+	}
+	const n = parseInt(color, 16);
+	if (isNaN(n)) return;
+	return { type: ColorType.c256, color: n % 256 };
 };
 
 export const rgbStringFromColor = (

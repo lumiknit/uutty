@@ -98,6 +98,9 @@ export type Buffer = {
 	attrString: string;
 	reverseWrapAround?: boolean;
 
+	// Unprocessed Sequences
+	unprocessed: string;
+
 	// Events
 	onBell?: () => void;
 	onUpdate?: (buffer: Buffer) => void;
@@ -111,6 +114,7 @@ export const newBuffer = (): Buffer => {
 		size: [80, 24],
 		attr: attr,
 		attrString: attributeToString(attr),
+		unprocessed: "",
 	};
 	moveCursorLine(buffer, 0);
 	moveCursorCol(buffer, 0);
@@ -370,7 +374,7 @@ const handleSGR = (buffer: Buffer, numbers: number[]) => {
 	buffer.attrString = attributeToString(newAttr);
 };
 
-const handleCSI = (buffer: Buffer, di: DataInput) => {
+const handleCSI = (buffer: Buffer, di: DataInput): boolean => {
 	// Check ? exists
 	let DEC = false;
 	if (di.d[di.p] === "?") {
@@ -398,6 +402,8 @@ const handleCSI = (buffer: Buffer, di: DataInput) => {
 	switch (
 		di.d[di.p++] // Switch: Execute
 	) {
+		case undefined:
+			return false;
 		case "@": {
 			// ICH: Insert character
 			let [n] = numbers;
@@ -710,16 +716,23 @@ const handleCSI = (buffer: Buffer, di: DataInput) => {
 		}
 		case "m": {
 			// SGR: Select graphic rendition
-			return handleSGR(buffer, numbers);
+			handleSGR(buffer, numbers);
+			return true;
 		}
 	} // Switch: Execute
+	return true;
 };
 
-const handleOSC = (buffer: Buffer, di: DataInput) => {};
+const handleOSC = (buffer: Buffer, di: DataInput): boolean => {
+	// TODO
+	return true;
+};
 
-const handleESC = (buffer: Buffer, di: DataInput) => {
+const handleESC = (buffer: Buffer, di: DataInput): boolean => {
 	const c = di.d[di.p++];
 	switch (c) {
+		case undefined:
+			return false;
 		case "7": {
 			// SC: Save cursor position
 			// TODO
@@ -733,6 +746,8 @@ const handleESC = (buffer: Buffer, di: DataInput) => {
 		case "#": {
 			const c = di.d[di.p++];
 			switch (c) {
+				case undefined:
+					return false;
 				case "8": {
 					// DECALN: Screen alignment pattern
 					// TODO
@@ -790,14 +805,15 @@ const handleESC = (buffer: Buffer, di: DataInput) => {
 			break;
 		}
 	}
+	return true;
 };
 
 export const putDataInput = (buffer: Buffer, data: string) => {
-	// TODO: Handle xterm sequence
 	let di: DataInput = {
 		p: 0,
-		d: data,
+		d: buffer.unprocessed + data,
 	};
+	buffer.unprocessed = "";
 	while (di.p < di.d.length) {
 		const c = di.d[di.p++];
 		switch (c) {
@@ -851,7 +867,12 @@ export const putDataInput = (buffer: Buffer, data: string) => {
 			}
 			case "\x1b": {
 				// ESC: Escape sequence
-				handleESC(buffer, di);
+				// Save current cursor position, because sometimes only part of the sequence is received
+				const q = di.p;
+				if (!handleESC(buffer, di)) {
+					buffer.unprocessed = di.d.slice(q - 1);
+					di.p = di.d.length;
+				}
 				break;
 			}
 			default:

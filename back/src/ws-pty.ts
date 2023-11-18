@@ -1,6 +1,7 @@
 import { IPty, spawn } from "node-pty";
 import WebSocket from "ws";
 import { genRandomString } from "./utils";
+import { Config } from "./config";
 
 // Auth
 // Server randomly generates a token.
@@ -24,7 +25,7 @@ export const getToken = () => {
 
 const CONNECTION_CHECK_INTERVAL = 20000;
 
-export const spawnPtyOnSocket = (socket: WebSocket) => {
+export const spawnPtyOnSocket = (socket: WebSocket, config: Config) => {
 	let lastPing = Date.now();
 	let disconnectCheckInterval = setInterval(() => {
 		if (Date.now() - lastPing > CONNECTION_CHECK_INTERVAL) {
@@ -58,15 +59,19 @@ export const spawnPtyOnSocket = (socket: WebSocket) => {
 		}
 		// Create pty
 		authorized = true;
-		pty = spawn("bash", [], {
-			name: "xterm-color",
+		pty = spawn(config.shell, [], {
+			name: "xterm-256color",
 			cols: 80,
 			rows: 30,
-			cwd: process.env.HOME,
-			env: process.env,
+			cwd: config.cwd,
+			env: {
+				...process.env,
+				...config.env,
+			},
 		});
 		pty.onData(data => {
-			console.log(`[${id} <-] ${data}`);
+			// Convert data to arraybuffer
+			console.log(`[${id} <-]`, data);
 			socket.send(data);
 		});
 		pty.onExit(() => {
@@ -81,7 +86,9 @@ export const spawnPtyOnSocket = (socket: WebSocket) => {
 		lastPing = Date.now();
 		const cc = s.charAt(0);
 		const data = s.slice(1);
-		console.log(`[${id} ->] ${cc}: ${data}`);
+		if (cc !== ".") {
+			console.log(`[${id} ->] ${cc}:`, data);
+		}
 		switch (cc) {
 			case ".": {
 				// Ping

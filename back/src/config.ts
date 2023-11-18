@@ -38,7 +38,7 @@ export type Config = {
 	staticPath: string;
 	shell: string;
 	cwd: string;
-	env: object;
+	env: { [key: string]: string | undefined };
 } & ClientConfig;
 
 const defaultShell = (): string => {
@@ -53,7 +53,7 @@ const defaultShell = (): string => {
 };
 
 export const defaultConfig = (): Config => ({
-	host: "127.0.0.1",
+	host: "0.0.0.0",
 	port: 3000,
 	auth: {
 		type: "none",
@@ -61,10 +61,12 @@ export const defaultConfig = (): Config => ({
 	staticPath: "../front-dist",
 	shell: defaultShell(),
 	cwd: os.homedir(),
-	env: process.env,
+	env: {
+		TERM: "xterm-256color",
+	},
 	themes: [
 		{
-			fontFamily: "'Iosevka QP Lumi', sans-serif",
+			fontFamily: "Tahoma, Helvetica, Arial, sans-serif",
 			fontSize: 14,
 			fg: "#ffffff",
 			bg: "#000000",

@@ -13,6 +13,7 @@ export type State = {
 
 export default () => {
 	const [state, setState] = createSignal<State | undefined>();
+	let canvasRef: HTMLCanvasElement | undefined;
 	onMount(async () => {
 		const config = await getRemoteConfig();
 		const state = termState.newTermState(config);
@@ -37,6 +38,31 @@ export default () => {
 			ws,
 		});
 	});
+	window.addEventListener("resize", () => {
+		const mx = 10,
+			my = 10;
+		const w = window.innerWidth - 2 * mx;
+		const h = window.innerHeight - 2 * my;
+		// Get 'M' character's width and height
+		const s = state();
+		const theme = s!.config.themes[s!.state.theme[0]()];
+		const canvas = canvasRef!;
+		const ctx = canvas.getContext("2d")!;
+		ctx.font = `${theme.fontSize}px ${theme.fontFamily}`;
+		const metrics = ctx.measureText("M");
+		const charWidth = metrics.width;
+		const charHeight = metrics.actualBoundingBoxAscent;
+		// Calculate new terminal size
+		const cols = Math.floor(w / charWidth);
+		const rows = Math.floor(h / charHeight);
+		// Resize
+		// Check original size
+		const buf = s!.state.buffer[0]();
+		if (buf.size[0] === rows && buf.size[1] === cols) return;
+		console.log("Resized:", cols, rows);
+		termState.resize(s!.state, cols, rows);
+		state()?.ws.send(`r${cols},${rows}`);
+	});
 	return (
 		<>
 			<Show when={state() !== undefined}>
@@ -46,18 +72,9 @@ export default () => {
 						console.log("Inputted:", data);
 						state()?.ws.send("w" + data);
 					}}
-					onResize={(cols, rows) => {
-						// Check original size
-						const s = state();
-						const buf = s!.state.buffer[0]();
-						if (buf.size[0] === rows && buf.size[1] === cols)
-							return;
-						console.log("Resized:", cols, rows);
-						termState.resize(s!.state, cols, rows);
-						state()?.ws.send(`r${cols},${rows}`);
-					}}
 				/>
 			</Show>
+			<canvas ref={canvasRef} class="uutty-dummy-canvas" />
 		</>
 	);
 };

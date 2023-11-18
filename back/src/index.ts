@@ -26,7 +26,7 @@ app.use(async (ctx, next) => {
 
 app.ws.use(
 	mount("/ws", async ctx => {
-		spawnPtyOnSocket(ctx.websocket);
+		spawnPtyOnSocket(ctx.websocket, config);
 	}),
 );
 
