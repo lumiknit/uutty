@@ -100,7 +100,7 @@ export const getClientConfig = (config: ClientConfig): ClientConfig => ({
 
 // --- CLI ---
 
-yargs.version("0.0.1");
+yargs.version("0.0.2");
 
 yargs.option("config", {
 	alias: "c",
