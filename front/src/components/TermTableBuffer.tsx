@@ -10,8 +10,9 @@ import { Buffer, BufferLine } from "../xterm/buffer";
 import { TermState, currentTheme } from "./term-state";
 import { ThemeConfig } from "../utils/config";
 import { attributeStringToStyle } from "./helpers";
+import wcwidth from "wcwidth";
 
-import "./term-buffer.css";
+import "./term-table-buffer.css";
 
 // -- Cursor
 
@@ -20,14 +21,14 @@ type TermCursorProps = {
 };
 
 const TermCursor: Component<TermCursorProps> = props => {
-	let ref: HTMLSpanElement | undefined;
+	let ref: HTMLTableCellElement | undefined;
 	onMount(() => {
 		const taRef = props.state.taRef;
 		if (!taRef) return;
 		taRef.style.setProperty("left", `${ref!.offsetLeft}px`);
 		taRef.style.setProperty("top", `${ref!.offsetTop}px`);
 	});
-	return <span ref={ref} class="cursor" />;
+	return <td ref={ref} class="cursor" />;
 };
 
 // -- BufferLine
@@ -42,6 +43,7 @@ type LineChunk = {
 	class: string;
 	style: JSX.CSSProperties;
 	text: string;
+	len: number;
 };
 
 export type RenderedLine = {
@@ -54,7 +56,13 @@ const newEmptyChunk = (cls: string): LineChunk => ({
 	class: cls,
 	style: {},
 	text: "",
+	len: 0,
 });
+
+const onlyOneSpace = (t1: string, t2: string) => {
+	if (t1 === " ") return t2 !== " ";
+	return t2 === " ";
+};
 
 const renderLineToChunks = (
 	theme: ThemeConfig,
@@ -62,6 +70,7 @@ const renderLineToChunks = (
 	cursor?: number,
 ): RenderedLine => {
 	const chunks: LineChunk[] = [];
+	let lastChar = "";
 	let lastAttr = "_";
 	let chunk: LineChunk = newEmptyChunk("");
 	// Helpers
@@ -77,14 +86,19 @@ const renderLineToChunks = (
 	let i = 0;
 	for (; i < cells.length; i++) {
 		if (i === cursor) pushCursor();
-		if (cells[i].attr !== lastAttr) {
+		if (
+			cells[i].attr !== lastAttr ||
+			onlyOneSpace(lastChar, cells[i].char)
+		) {
 			pushChunk();
 			chunk = newEmptyChunk("");
 			// Parse attr
 			lastAttr = cells[i].attr;
 			chunk.style = attributeStringToStyle(theme, lastAttr);
 		}
-		chunk.text += cells[i].char;
+		lastChar = cells[i].char;
+		chunk.text = chunk.text.trimEnd() + cells[i].char;
+		chunk.len += wcwidth(cells[i].char);
 	}
 	if (i === cursor) pushCursor();
 	pushChunk();
@@ -113,19 +127,22 @@ const TermBufferLine: Component<TermBufferLineProps> = props => {
 		);
 	});
 	return (
-		<div>
+		<tr>
 			<For each={rendered().chunks}>
 				{chunk =>
 					chunk.class === "cursor" ? (
 						<TermCursor state={props.state} />
 					) : (
-						<span class={chunk.class} style={chunk.style}>
+						<td
+							class={chunk.class}
+							style={chunk.style}
+							colSpan={chunk.len}>
 							{chunk.text}
-						</span>
+						</td>
 					)
 				}
 			</For>
-		</div>
+		</tr>
 	);
 };
 
@@ -136,9 +153,9 @@ type TermBufferProps = {
 	state: TermState;
 };
 
-const TermBuffer: Component<TermBufferProps> = props => {
+const TermTableBuffer: Component<TermBufferProps> = props => {
 	return (
-		<div class="uutty-term-buffer">
+		<table class="uutty-term-buffer">
 			<For each={props.buffer.lines}>
 				{(line, idx) => (
 					<TermBufferLine
@@ -152,8 +169,8 @@ const TermBuffer: Component<TermBufferProps> = props => {
 					/>
 				)}
 			</For>
-		</div>
+		</table>
 	);
 };
 
-export default TermBuffer;
+export default TermTableBuffer;

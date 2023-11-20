@@ -1,0 +1,13 @@
+/* Buffer */
+
+table.uutty-term-buffer {
+	border: none;
+	border-collapse: collapse;
+}
+
+.uutty-term-buffer td {
+	margin: 0;
+	padding: 0;
+	min-width: 0.33em;
+	white-space: pre;
+}

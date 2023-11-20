@@ -1,4 +1,4 @@
-import { Show, createSignal, onMount } from "solid-js";
+import { Show, createEffect, createSignal, onMount } from "solid-js";
 import "./App.css";
 import Term from "./components/Term";
 import { ClientConfig, getRemoteConfig } from "./utils/config";
@@ -37,6 +37,16 @@ export default () => {
 			state,
 			ws,
 		});
+	});
+	createEffect(() => {
+		const s = state();
+		if (!s) return;
+		const theme = s.config.themes[s.state.theme[0]()];
+		const meta = document.querySelector("meta[name=theme-color]")!;
+		meta.setAttribute("content", theme.bg);
+		// Background color
+		document.body.style.setProperty("background-color", theme.bg);
+		document.body.style.setProperty("scrollbar-color", theme.fg);
 	});
 	window.addEventListener("resize", () => {
 		const mx = 10,

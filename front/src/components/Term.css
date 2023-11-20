@@ -11,10 +11,6 @@
 	position: relative;
 }
 
-.uutty-term-buffer span {
-	white-space: pre-wrap;
-}
-
 .uutty-dummy-canvas {
 	display: none;
 }

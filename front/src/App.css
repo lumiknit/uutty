@@ -1,3 +1,9 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: black;
+}
+
 .uutty-term {
 	display: block;
 	position: absolute;

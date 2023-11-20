@@ -8,6 +8,7 @@ export type ThemeConfig = {
 	cursor: string;
 	selection: string;
 	ansi: string[];
+	tableBuffer?: boolean;
 };
 
 export type ClientConfig = {

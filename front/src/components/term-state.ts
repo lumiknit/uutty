@@ -28,3 +28,6 @@ export const putData = (state: TermState, data: string) => {
 		return s;
 	});
 };
+
+export const currentTheme = (state: TermState) =>
+	state.config.themes[state.theme[0]()];

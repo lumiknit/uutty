@@ -23,6 +23,8 @@ export type ThemeConfig = {
 	cursor: string;
 	selection: string;
 	ansi: string[];
+	// Options
+	tableBuffer?: boolean;
 };
 
 export type ClientConfig = {
@@ -66,7 +68,7 @@ export const defaultConfig = (): Config => ({
 	},
 	themes: [
 		{
-			fontFamily: "Tahoma, Helvetica, Arial, sans-serif",
+			fontFamily: "'Iosevka QP Lumi', sans-serif",
 			fontSize: 14,
 			fg: "#ffffff",
 			bg: "#000000",
@@ -90,6 +92,7 @@ export const defaultConfig = (): Config => ({
 				"#00ffff",
 				"#ffffff",
 			],
+			tableBuffer: true,
 		},
 	],
 });

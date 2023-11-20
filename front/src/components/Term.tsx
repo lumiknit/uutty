@@ -1,9 +1,10 @@
-import { Component, createEffect, onMount } from "solid-js";
-import { TermState } from "./term-state";
+import { Component, Match, Switch, createEffect, onMount } from "solid-js";
+import { TermState, currentTheme } from "./term-state";
 import TermBuffer from "./TermBuffer";
 import { inputToSeq, specialKeyToSeq } from "../xterm/input";
 
 import "./Term.css";
+import TermTableBuffer from "./TermTableBuffer";
 
 type TermProps = {
 	state: TermState;
@@ -17,8 +18,6 @@ const Term: Component<TermProps> = props => {
 	let containerRef: HTMLDivElement | undefined;
 	let taRef: HTMLTextAreaElement | undefined;
 	let canvasRef: HTMLCanvasElement | undefined;
-
-	const themeConfig = () => props.state.config.themes[props.state.theme[0]()];
 
 	const focus = () => {
 		if (!taRef) return;
@@ -68,7 +67,7 @@ const Term: Component<TermProps> = props => {
 		<div
 			class="uutty-term"
 			style={{
-				"background-color": themeConfig().bg,
+				"background-color": currentTheme(props.state).bg,
 				padding: "10px",
 			}}
 			onClick={focus}>
@@ -76,14 +75,25 @@ const Term: Component<TermProps> = props => {
 				ref={containerRef}
 				class="uutty-term-container"
 				style={{
-					"font-family": themeConfig().fontFamily,
-					"font-size": `${themeConfig().fontSize}px`,
-					color: themeConfig().fg,
+					"font-family": currentTheme(props.state).fontFamily,
+					"font-size": `${currentTheme(props.state).fontSize}px`,
+					color: currentTheme(props.state).fg,
 				}}>
-				<TermBuffer
-					state={props.state}
-					buffer={props.state.buffer[0]()}
-				/>
+				<Switch>
+					<Match when={currentTheme(props.state).tableBuffer}>
+						<TermTableBuffer
+							state={props.state}
+							buffer={props.state.buffer[0]()}
+						/>
+					</Match>
+					<Match when={true}>
+						<TermBuffer
+							state={props.state}
+							buffer={props.state.buffer[0]()}
+						/>
+					</Match>
+				</Switch>
+
 				<textarea
 					ref={taRef}
 					class={`uutty-cursor`}
@@ -91,10 +101,10 @@ const Term: Component<TermProps> = props => {
 					onInput={handleInputTA}
 					onCompositionEnd={handleCompositionEndTA}
 					style={{
-						"font-family": themeConfig().fontFamily,
-						"font-size": `${themeConfig().fontSize}px`,
-						color: themeConfig().fg,
-						"border-color": themeConfig().cursor,
+						"font-family": currentTheme(props.state).fontFamily,
+						"font-size": `${currentTheme(props.state).fontSize}px`,
+						color: currentTheme(props.state).fg,
+						"border-color": currentTheme(props.state).cursor,
 					}}
 				/>
 			</div>
