@@ -6,6 +6,7 @@ export type TermState = {
 	config: ClientConfig;
 	theme: Signal<number>;
 	taRef?: HTMLTextAreaElement;
+	bufferWrapperRef?: HTMLDivElement;
 	buffer: Signal<Buffer>;
 };
 

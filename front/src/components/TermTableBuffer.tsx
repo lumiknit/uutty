@@ -13,23 +13,7 @@ import { attributeStringToStyle } from "./helpers";
 import wcwidth from "wcwidth";
 
 import "./term-table-buffer.css";
-
-// -- Cursor
-
-type TermCursorProps = {
-	state: TermState;
-};
-
-const TermCursor: Component<TermCursorProps> = props => {
-	let ref: HTMLTableCellElement | undefined;
-	onMount(() => {
-		const taRef = props.state.taRef;
-		if (!taRef) return;
-		taRef.style.setProperty("left", `${ref!.offsetLeft}px`);
-		taRef.style.setProperty("top", `${ref!.offsetTop}px`);
-	});
-	return <td ref={ref} class="cursor" />;
-};
+import TermCursor from "./TermCursor";
 
 // -- BufferLine
 
@@ -40,10 +24,10 @@ type TermBufferLineProps = {
 };
 
 type LineChunk = {
-	class: string;
 	style: JSX.CSSProperties;
 	text: string;
 	len: number;
+	cursor?: boolean;
 };
 
 export type RenderedLine = {
@@ -52,8 +36,7 @@ export type RenderedLine = {
 	chunks: LineChunk[];
 };
 
-const newEmptyChunk = (cls: string): LineChunk => ({
-	class: cls,
+const newEmptyChunk = (): LineChunk => ({
 	style: {},
 	text: "",
 	len: 0,
@@ -72,15 +55,15 @@ const renderLineToChunks = (
 	const chunks: LineChunk[] = [];
 	let lastChar = "";
 	let lastAttr = "_";
-	let chunk: LineChunk = newEmptyChunk("");
+	let chunk: LineChunk = newEmptyChunk();
 	// Helpers
 	const pushChunk = () => {
 		if (chunk.text) chunks.push(chunk);
 	};
 	const pushCursor = () => {
+		chunk.cursor = true;
 		pushChunk();
-		chunks.push(newEmptyChunk("cursor"));
-		chunk = newEmptyChunk("");
+		chunk = newEmptyChunk();
 	};
 	const cells = line.cells;
 	let i = 0;
@@ -91,7 +74,7 @@ const renderLineToChunks = (
 			onlyOneSpace(lastChar, cells[i].char)
 		) {
 			pushChunk();
-			chunk = newEmptyChunk("");
+			chunk = newEmptyChunk();
 			// Parse attr
 			lastAttr = cells[i].attr;
 			chunk.style = attributeStringToStyle(theme, lastAttr);
@@ -112,7 +95,7 @@ const renderLineToChunks = (
 const TermBufferLine: Component<TermBufferLineProps> = props => {
 	const [rendered, setRendered] = createSignal<RenderedLine>({
 		m: 0,
-		chunks: [newEmptyChunk("")],
+		chunks: [newEmptyChunk()],
 	});
 	createEffect(() => {
 		props.state.buffer[0](); // Just subscribe to the buffer
@@ -129,18 +112,12 @@ const TermBufferLine: Component<TermBufferLineProps> = props => {
 	return (
 		<tr>
 			<For each={rendered().chunks}>
-				{chunk =>
-					chunk.class === "cursor" ? (
+				{chunk => (
+					<td style={chunk.style} colSpan={chunk.len}>
+						{chunk.text}
 						<TermCursor state={props.state} />
-					) : (
-						<td
-							class={chunk.class}
-							style={chunk.style}
-							colSpan={chunk.len}>
-							{chunk.text}
-						</td>
-					)
-				}
+					</td>
+				)}
 			</For>
 		</tr>
 	);

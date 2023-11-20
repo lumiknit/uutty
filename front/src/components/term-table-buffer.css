@@ -5,7 +5,12 @@ table.uutty-term-buffer {
 	border-collapse: collapse;
 }
 
+.uutty-term-buffer tr {
+	position: static;
+}
+
 .uutty-term-buffer td {
+	position: static;
 	margin: 0;
 	padding: 0;
 	min-width: 0.33em;

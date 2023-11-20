@@ -68,7 +68,7 @@ export const defaultConfig = (): Config => ({
 	},
 	themes: [
 		{
-			fontFamily: "'Iosevka QP Lumi', sans-serif",
+			fontFamily: "'Tahoma', sans-serif",
 			fontSize: 14,
 			fg: "#ffffff",
 			bg: "#000000",

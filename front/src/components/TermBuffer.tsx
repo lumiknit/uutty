@@ -12,23 +12,7 @@ import { ThemeConfig } from "../utils/config";
 import { attributeStringToStyle } from "./helpers";
 
 import "./term-buffer.css";
-
-// -- Cursor
-
-type TermCursorProps = {
-	state: TermState;
-};
-
-const TermCursor: Component<TermCursorProps> = props => {
-	let ref: HTMLSpanElement | undefined;
-	onMount(() => {
-		const taRef = props.state.taRef;
-		if (!taRef) return;
-		taRef.style.setProperty("left", `${ref!.offsetLeft}px`);
-		taRef.style.setProperty("top", `${ref!.offsetTop}px`);
-	});
-	return <span ref={ref} class="cursor" />;
-};
+import TermCursor from "./TermCursor";
 
 // -- BufferLine
 

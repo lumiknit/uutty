@@ -16,8 +16,8 @@ type TermProps = {
 
 const Term: Component<TermProps> = props => {
 	let containerRef: HTMLDivElement | undefined;
+	let divRef: HTMLDivElement | undefined;
 	let taRef: HTMLTextAreaElement | undefined;
-	let canvasRef: HTMLCanvasElement | undefined;
 
 	const focus = () => {
 		if (!taRef) return;
@@ -31,6 +31,7 @@ const Term: Component<TermProps> = props => {
 
 	onMount(() => {
 		props.state.taRef = taRef;
+		props.state.bufferWrapperRef = divRef;
 	});
 
 	const handleKeyDownTA = (e: KeyboardEvent) => {
@@ -79,20 +80,22 @@ const Term: Component<TermProps> = props => {
 					"font-size": `${currentTheme(props.state).fontSize}px`,
 					color: currentTheme(props.state).fg,
 				}}>
-				<Switch>
-					<Match when={currentTheme(props.state).tableBuffer}>
-						<TermTableBuffer
-							state={props.state}
-							buffer={props.state.buffer[0]()}
-						/>
-					</Match>
-					<Match when={true}>
-						<TermBuffer
-							state={props.state}
-							buffer={props.state.buffer[0]()}
-						/>
-					</Match>
-				</Switch>
+				<div ref={divRef}>
+					<Switch>
+						<Match when={currentTheme(props.state).tableBuffer}>
+							<TermTableBuffer
+								state={props.state}
+								buffer={props.state.buffer[0]()}
+							/>
+						</Match>
+						<Match when={true}>
+							<TermBuffer
+								state={props.state}
+								buffer={props.state.buffer[0]()}
+							/>
+						</Match>
+					</Switch>
+				</div>
 
 				<textarea
 					ref={taRef}
